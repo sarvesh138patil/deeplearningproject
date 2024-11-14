@@ -21,6 +21,6 @@ name="Xray",
 version="0.0.1",
 author="sarvesh patil",
 author_email="sarvesh138patil@gmail.com",
-install_requires=get_requirements("D:\Visual_studio_code\iNeuron_projects\deeplearningproject\requirements_dev.txt"),
+install_requires=get_requirements("D:\\Visual_studio_code\\iNeuron_projects\\deeplearningproject\\requirements_dev.txt"),
 package=find_packages()
 )
