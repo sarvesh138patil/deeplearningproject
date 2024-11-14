@@ -1,7 +1,9 @@
-from setuptools import find_namespace_packages, setup
+from setuptools import find_packages, setup
+from typing import List
 
+HYPEN_E_DOT = '-e .'
 
-def get_requirements(file_path:str)->List[str]:
+def get_requirements(file_path:str)->list[str]:
     requirements=[]
     with open(file_path) as file_obj:
         requirements=file_obj.readlines()
@@ -19,8 +21,6 @@ name="Xray",
 version="0.0.1",
 author="sarvesh patil",
 author_email="sarvesh138patil@gmail.com",
-install_requires=get_requirements(),
+install_requires=get_requirements("D:\Visual_studio_code\iNeuron_projects\deeplearningproject\requirements_dev.txt"),
 package=find_packages()
-
-
 )
