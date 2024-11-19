@@ -1,6 +1,7 @@
 import sys
 
 from Xray.cloud_storage.s3_operation import S3Operation
+from Xray.constant.training_pipeline import *
 from Xray.entity.artifact_entity import DataIngestionArtifact
 from Xray.entity.config_entity import DataIngestionConfig
 from Xray.exception import XRayException
@@ -20,7 +21,7 @@ class DataIngestion:
             self.s3.sync_folder_from_s3(
                 folder=self.data_ingestion_config.data_path,
                 bucket_name=self.data_ingestion_config.bucket_name,
-                bucket_folder_name=self.data_ingestion_config.s3_data_folder,
+                bucket_folder_name=self.data_ingestion_config.S3_data_folder,
             )
 
         except Exception as e:

@@ -1,5 +1,6 @@
 import os
 import sys
+
 from Xray.exception import XRayException
 
 class S3Operation:
