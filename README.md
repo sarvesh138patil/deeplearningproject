@@ -16,9 +16,16 @@ Data link: https://drive.google.com/file/d/1pfIAlurfeqFTbirUZ5v_vapIoGPgRiXY/vie
 # How to setup
 ```
 bash (creating venv)
+a) Using conda
 conda create -n lung python 3.8 -y
+b) Using pip
+python -m venv my_venv
 
+activating virtual environment
+a) Using conda
 conda activate lungs
+b) Using pip
+my_venv\Scripts\activate
 
 pip install -r requirements.txt
 

@@ -93,7 +93,7 @@ class DataTransformation:
 
             train_data: Dataset = ImageFolder(
                 os.path.join(self.data_ingestion_artifact.train_file_path),
-                transforms = train_transform,
+                transform = train_transform,
             )
 
             test_data: Dataset = ImageFolder(
@@ -138,7 +138,7 @@ class DataTransformation:
             )
 
             joblib.dump(
-                train_transform, self.data_transformation_config.test_transform_file
+                train_transform, self.data_transformation_config.test_transforms_file
             )
 
             train_loader, test_loader = self.data_loader(
