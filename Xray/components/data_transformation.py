@@ -11,18 +11,20 @@ from Xray.entity.artifact_entity import (
     DataIngestionArtifact,
     DataTransformationArtifact,
 )
-
 from Xray.entity.config_entity import DataTransformationConfig
 from Xray.exception import XRayException
 from Xray.logger import logging
 
+
+
 class DataTransformation:
     def __init__(
-            self,
-            data_transformation_config: DataTransformationConfig,
-            data_ingestion_artifact: DataTransformationArtifact,
+        self,
+        data_transformation_config: DataTransformationConfig,
+        data_ingestion_artifact: DataIngestionArtifact,
     ):
         self.data_transformation_config = data_transformation_config
+
         self.data_ingestion_artifact = data_ingestion_artifact
 
     def transforming_training_data(self) -> transforms.Compose:
@@ -35,7 +37,9 @@ class DataTransformation:
                 [
                     transforms.Resize(self.data_transformation_config.RESIZE),
                     transforms.CenterCrop(self.data_transformation_config.CENTERCROP),
-                    transforms.ColorJitter(**self.data_transformation_config.color_jitter_transforms),
+                    transforms.ColorJitter(
+                        **self.data_transformation_config.color_jitter_transforms
+                    ),
                     transforms.RandomHorizontalFlip(),
                     transforms.RandomRotation(
                         self.data_transformation_config.RANDOMROTATION
@@ -48,14 +52,15 @@ class DataTransformation:
             )
 
             logging.info(
-                "Exited thetransforming_training_data method of Data transformation class"
+                "Exited the transforming_training_data method of Data transformation class"
             )
 
             return train_transform
-        
+
         except Exception as e:
             raise XRayException(e, sys)
         
+
 
     def transforming_testing_data(self) -> transforms.Compose:
         logging.info(
@@ -79,21 +84,22 @@ class DataTransformation:
             )
 
             return test_transform
-    
+
         except Exception as e:
             raise XRayException(e, sys)
         
+
+
+    
     def data_loader(
-            self,
-            train_transform: transforms.Compose,
-            test_transform: transforms.Compose
+        self, train_transform: transforms.Compose, test_transform: transforms.Compose
     ) -> Tuple[DataLoader, DataLoader]:
         try:
             logging.info("Entered the data_loader method of Data transformation class")
 
             train_data: Dataset = ImageFolder(
                 os.path.join(self.data_ingestion_artifact.train_file_path),
-                transform = train_transform,
+                transform=train_transform,
             )
 
             test_data: Dataset = ImageFolder(
@@ -111,15 +117,15 @@ class DataTransformation:
                 test_data, **self.data_transformation_config.data_loader_params
             )
 
-            logging.info(
-                "Exited the data_loader method of Data transformation class"
-                )
+            logging.info("Exited the data_loader method of Data transformation class")
 
             return train_loader, test_loader
-        
+
         except Exception as e:
             raise XRayException(e, sys)
         
+
+
     
     def initiate_data_transformation(self) -> DataTransformationArtifact:
         try:
@@ -138,25 +144,25 @@ class DataTransformation:
             )
 
             joblib.dump(
-                train_transform, self.data_transformation_config.test_transforms_file
+                test_transform, self.data_transformation_config.test_transforms_file
             )
 
             train_loader, test_loader = self.data_loader(
-                train_transform=train_transform, test_transform = test_transform
+                train_transform=train_transform, test_transform=test_transform
             )
 
             data_transformation_artifact: DataTransformationArtifact = DataTransformationArtifact(
-                transformed_train_object = train_loader,
-                transformed_test_object = test_loader,
-                train_transform_file_path = self.data_transformation_config.train_transforms_file,
-                test_transform_file_path = self.data_transformation_config.test_transforms_file,
+                transformed_train_object=train_loader,
+                transformed_test_object=test_loader,
+                train_transform_file_path=self.data_transformation_config.train_transforms_file,
+                test_transform_file_path=self.data_transformation_config.test_transforms_file,
             )
 
             logging.info(
                 "Exited the initiate_data_transformation method of Data transformation class"
-                )
-            
+            )
+
             return data_transformation_artifact
-        
+
         except Exception as e:
             raise XRayException(e, sys)

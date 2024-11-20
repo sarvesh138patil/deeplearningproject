@@ -7,7 +7,7 @@ import torch
 import torch.nn.functional as F
 from torch.nn import Module
 from torch.optim import Optimizer
-from torch.optim.lr_scheduler import StepLR, LRScheduler
+from torch.optim.lr_scheduler import StepLR, _LRScheduler
 from tqdm import tqdm
 
 from Xray.constant.training_pipeline import *
@@ -15,19 +15,20 @@ from Xray.entity.artifact_entity import (
     DataTransformationArtifact,
     ModelTrainerArtifact,
 )
-
 from Xray.entity.config_entity import ModelTrainerConfig
 from Xray.exception import XRayException
 from Xray.logger import logging
 from Xray.ml.model.arch import Net
 
+
+
+
 class ModelTrainer:
     def __init__(
-            self,
-            data_transformation_artifact: DataTransformationArtifact,
-            model_trainer_config: ModelTrainerArtifact,
+        self,
+        data_transformation_artifact: DataTransformationArtifact,
+        model_trainer_config: ModelTrainerConfig,
     ):
-        
         self.model_trainer_config: ModelTrainerConfig = model_trainer_config
 
         self.data_transformation_artifact: DataTransformationArtifact = (
@@ -38,11 +39,12 @@ class ModelTrainer:
 
 
 
+
     def train(self, optimizer: Optimizer) -> None:
         """
         Description: To train the model
 
-        input: model, device, train_loader, optimizer, epoch
+        input: model,device,train_loader,optimizer,epoch
 
         output: loss, batch id and accuracy
         """
@@ -60,10 +62,10 @@ class ModelTrainer:
             for batch_idx, (data, target) in enumerate(pbar):
                 data, target = data.to(DEVICE), target.to(DEVICE)
 
-                #Initialization of gradient
+                # Initialization of gradient
                 optimizer.zero_grad()
 
-                # In PyTorch, gradient is accumulated over backprop and even though thats used in RNN generally not in CNN
+                # In PyTorch, gradient is accumulated over backprop and even though thats used in RNN generally not used in CNN
                 # or specific requirements
                 ## prediction on data
 
@@ -72,7 +74,7 @@ class ModelTrainer:
                 # Calculating loss given the prediction
                 loss = F.nll_loss(y_pred, target)
 
-                #Backprop
+                # Backprop
                 loss.backward()
 
                 optimizer.step()
@@ -86,24 +88,26 @@ class ModelTrainer:
 
                 pbar.set_description(
                     desc=f"Loss={loss.item()} Batch_id={batch_idx} Accuracy={100*correct/processed:0.2f}"
-                )   
+                )
 
-            logging.info(
-                "Exited the train method of Model trainer class"
-            )
+            logging.info("Exited the train method of Model trainer class")
 
         except Exception as e:
             raise XRayException(e, sys)
-            
+        
+
+
 
     def test(self) -> None:
         try:
             """
             Description: To test the model
-            input: model, Device, test_loader
+
+            input: model, DEVICE, test_loader
+
             output: average loss and accuracy
+
             """
-    
             logging.info("Entered the test method of Model trainer class")
 
             self.model.eval()
@@ -131,7 +135,6 @@ class ModelTrainer:
                     self.data_transformation_artifact.transformed_test_object.dataset
                 )
 
-
                 print(
                     "Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n".format(
                         test_loss,
@@ -139,11 +142,15 @@ class ModelTrainer:
                         len(
                             self.data_transformation_artifact.transformed_test_object.dataset
                         ),
-                    100.0 * correct / len(self.data_transformation_artifact.transformed_test_object.dataset),
+                        100.0
+                        * correct
+                        / len(
+                            self.data_transformation_artifact.transformed_test_object.dataset
+                        ),
                     )
                 )
 
-                logging.info(
+            logging.info(
                 "Test set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)".format(
                     test_loss,
                     correct,
@@ -162,7 +169,7 @@ class ModelTrainer:
 
         except Exception as e:
             raise XRayException(e, sys)
-
+        
 
         
 
